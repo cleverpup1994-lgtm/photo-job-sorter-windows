@@ -1,9 +1,12 @@
 name: README screenshots
 
-# Renders real screens of the app with demo data and uploads them as an
-# artifact. Run it by hand from the Actions tab.
+# Renders real screens of the app with demo data and saves them to
+# docs/screenshots. Run it by hand from the Actions tab.
 on:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   screenshots:
@@ -19,7 +22,12 @@ jobs:
         run: cp "$FLUTTER_ROOT/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf" tool/screenshots/fonts/
       - name: Render screenshots
         run: flutter test tool/screenshots/screenshots_test.dart --update-goldens
-      - uses: actions/upload-artifact@v4
-        with:
-          name: screenshots
-          path: tool/screenshots/out/*.png
+      - name: Save to docs/screenshots
+        run: |
+          mkdir -p docs/screenshots
+          cp tool/screenshots/out/*.png docs/screenshots/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots
+          git diff --cached --quiet || git commit -m "Update README screenshots"
+          git push
