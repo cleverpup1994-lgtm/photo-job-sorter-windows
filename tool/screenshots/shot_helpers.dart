@@ -3,6 +3,7 @@
 // Widget tests normally draw text with a placeholder font and no shadows.
 // These helpers load real fonts and turn shadows back on, so the images
 // rendered by tool/screenshots look like the running app.
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -61,4 +62,18 @@ Future<void> capture(WidgetTester tester, String name) async {
     matchesGoldenFile('out/$name.png'),
   );
   debugDisableShadows = true;
+}
+
+/// Loads images into the image cache before any widget asks for them.
+/// (Images first requested inside the test clock never finish loading, so
+/// warm them up on the real clock and the widgets find them ready.)
+Future<void> warmImages(WidgetTester tester, Iterable<ImageProvider> images) async {
+  await tester.runAsync(() => Future.wait(images.map((provider) {
+        final done = Completer<void>();
+        provider.resolve(ImageConfiguration.empty).addListener(ImageStreamListener(
+              (_, __) => done.isCompleted ? null : done.complete(),
+              onError: (_, __) => done.isCompleted ? null : done.complete(),
+            ));
+        return done.future.timeout(const Duration(seconds: 20), onTimeout: () {});
+      })));
 }

@@ -52,14 +52,11 @@ void main() {
     for (var i = 0; i < names.length && i < controller.groups.length; i++) {
       controller.rename(controller.groups[i], names[i]);
     }
+    await warmImages(tester, [
+      for (final g in controller.groups)
+        for (final photo in g.photos) ResizeImage(FileImage(File(photo.path)), width: 284),
+    ]);
     await tester.pumpWidget(PhotoJobSorterApp(controller: controller));
-
-    final context = tester.element(find.byType(Scaffold).first);
-    await tester.runAsync(() async {
-      for (final img in tester.widgetList<Image>(find.byType(Image))) {
-        await precacheImage(img.image, context);
-      }
-    });
     await tester.pump();
     await capture(tester, 'sorter_grouped');
   });
