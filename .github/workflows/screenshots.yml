@@ -1,0 +1,25 @@
+name: README screenshots
+
+# Renders real screens of the app with demo data and uploads them as an
+# artifact. Run it by hand from the Actions tab.
+on:
+  workflow_dispatch:
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Use the Material icon font from the SDK
+        run: cp "$FLUTTER_ROOT/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf" tool/screenshots/fonts/
+      - name: Render screenshots
+        run: flutter test tool/screenshots/screenshots_test.dart --update-goldens
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: tool/screenshots/out/*.png
