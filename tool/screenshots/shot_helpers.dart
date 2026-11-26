@@ -21,7 +21,7 @@ Future<void> loadScreenshotFonts() async {
 
   ByteData bytesOf(File f) => ByteData.sublistView(Uint8List.fromList(f.readAsBytesSync()));
 
-  for (final family in ['Roboto', 'Segoe UI', '.AppleSystemUIFont']) {
+  for (final family in ['Roboto', 'Segoe UI', '.AppleSystemUIFont', 'FlutterTest', 'Ahem']) {
     final loader = FontLoader(family);
     for (final f in files.where((f) => f.path.contains('Inter-'))) {
       loader.addFont(Future.value(bytesOf(f)));
