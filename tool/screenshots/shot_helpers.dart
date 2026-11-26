@@ -13,7 +13,6 @@ import 'package:flutter_test/flutter_test.dart';
 const _fontsDir = 'tool/screenshots/fonts';
 
 Future<void> loadScreenshotFonts() async {
-  debugDisableShadows = false;
   final files = Directory(_fontsDir)
       .listSync()
       .whereType<File>()
@@ -49,9 +48,17 @@ void _screen(WidgetTester tester, Size logical, double dpr) {
 /// Writes the current screen to tool/screenshots/out/<name>.png
 /// (run with --update-goldens).
 Future<void> capture(WidgetTester tester, String name) async {
+  // Tests hide shadows by default; show them for the picture, then restore
+  // the default before the test ends (the framework checks it).
+  debugDisableShadows = false;
+  addTearDown(() => debugDisableShadows = true);
+  for (final r in tester.allRenderObjects) {
+    r.markNeedsPaint();
+  }
   await tester.pump(const Duration(milliseconds: 400));
   await expectLater(
     find.byType(MaterialApp).first,
     matchesGoldenFile('out/$name.png'),
   );
+  debugDisableShadows = true;
 }
