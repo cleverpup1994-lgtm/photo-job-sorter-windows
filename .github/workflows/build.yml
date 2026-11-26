@@ -1,0 +1,50 @@
+name: Test and build Windows app
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Generate Windows platform files
+        shell: bash
+        run: |
+          flutter create --platforms=windows --org com.habexstudios --project-name photo_job_sorter .
+          rm -f test/widget_test.dart
+
+      - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos
+      - run: flutter test
+      - run: flutter build windows --release
+
+      - name: Zip the app
+        shell: pwsh
+        run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath photo-job-sorter-windows.zip
+
+      - name: Publish as the latest release
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          R="${{ github.repository }}"
+          if gh release view latest -R "$R" >/dev/null 2>&1; then
+            gh release upload latest photo-job-sorter-windows.zip --clobber -R "$R"
+          else
+            gh release create latest photo-job-sorter-windows.zip -R "$R" \
+              --title "Photo Job Sorter for Windows (latest build)" \
+              --notes "Download the zip, extract it, and run photo_job_sorter.exe. No install needed." \
+              --latest
+          fi
