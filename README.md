@@ -6,6 +6,12 @@ Built for the kind of shop that takes hundreds of photos a week on one camera (a
 
 **Try it:** download `photo-job-sorter-windows.zip` from the [latest release](../../releases/latest), extract it, and run `photo_job_sorter.exe`. Nothing to install.
 
+## Screenshots
+
+<img src="docs/screenshots/sorter_grouped.png" alt="Photos grouped by vehicle, with folder names typed in">
+
+Rendered by CI from the real app, using drawn sample photos (`tool/screenshots`).
+
 ## How it works
 
 1. **Open folder:** pick the folder from the camera's memory card.
