@@ -5,7 +5,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path/path.dart' as p;
 import 'package:photo_job_sorter/logic/grouping.dart';
 import 'package:photo_job_sorter/logic/sorter_controller.dart';
 import 'package:photo_job_sorter/main.dart';
@@ -47,7 +46,7 @@ void main() {
   testWidgets('screenshot: photos grouped by vehicle', (tester) async {
     useDesktopScreen(tester);
     final controller = SorterController()
-      ..load(p.absolute(_folder), _samplePhotos());
+      ..load(r'D:\Camera\2026-11-20', _samplePhotos());
     final names = ['HBX-4821 windshield', 'KLM-3307 door glass', 'RTX-9152 windshield'];
     for (var i = 0; i < names.length && i < controller.groups.length; i++) {
       controller.rename(controller.groups[i], names[i]);

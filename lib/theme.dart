@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Safety orange on dark charcoal, a nod to job-site colors.
@@ -28,7 +29,12 @@ ThemeData buildTheme() {
       style: FilledButton.styleFrom(
         minimumSize: const Size(64, 48),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        // Start from the platform's label style so the button keeps the
+        // system font (Roboto, Segoe UI, ...) and only changes size/weight.
+        textStyle: Typography.material2021(platform: defaultTargetPlatform)
+            .white
+            .labelLarge!
+            .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     ),
     cardTheme: CardThemeData(
